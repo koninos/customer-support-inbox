@@ -1,49 +1,36 @@
+import { Conversation } from "../../types/conversation";
 import styles from "./conversationDetail.module.scss";
 
-const messages = [
-  {
-    id: 1,
-    sender: "John Doe",
-    content: "I was charged twice for my subscription.",
-    timestamp: "10:32 AM",
-    type: "customer",
-  },
-  {
-    id: 2,
-    sender: "Support",
-    content:
-      "I'm sorry about that. I'll look into the duplicate charge for you.",
-    timestamp: "10:35 AM",
-    type: "agent",
-  },
-];
+type ConversationDetailProps = {
+  conversation: Conversation;
+};
 
-export function ConversationDetail() {
+export function ConversationDetail({ conversation }: ConversationDetailProps) {
   return (
     <section className={styles.container}>
       <header className={styles.header}>
-        <h1>Payment charged twice</h1>
-        <p>John Doe</p>
+        <h1>{conversation.subject}</h1>
+        <p>{conversation.customer}</p>
       </header>
 
       <div className={styles.messages}>
-        {messages.map((message) => (
-          <article
-            key={message.id}
-            className={`${styles.message} ${
-              message.type === "agent"
-                ? styles.messageAgent
-                : styles.messageCustomer
-            }`}
-          >
-            <div className={styles.messageHeader}>
-              <strong>{message.sender}</strong>
-              <time>{message.timestamp}</time>
-            </div>
+        {conversation.messages.map(
+          ({ id, type, sender, timestamp, content }) => (
+            <article
+              key={id}
+              className={`${styles.message} ${
+                type === "agent" ? styles.messageAgent : styles.messageCustomer
+              }`}
+            >
+              <div className={styles.messageHeader}>
+                <strong>{sender}</strong>
+                <time>{timestamp}</time>
+              </div>
 
-            <p>{message.content}</p>
-          </article>
-        ))}
+              <p>{content}</p>
+            </article>
+          ),
+        )}
       </div>
 
       <form className={styles.replyForm}>

@@ -1,12 +1,5 @@
-import { ConversationList } from "@/features/conversations/components/conversationList/conversationList";
-import { ConversationDetail } from "@/features/conversations/components/conversationDetail/conversationDetail";
-import styles from "./page.module.scss";
+import { ConversationInbox } from "@/features/conversations/components/conversationInbox/conversationInbox";
 
 export default function Home() {
-  return (
-    <main className={styles.inbox}>
-      <ConversationList />
-      <ConversationDetail />
-    </main>
-  );
+  return <ConversationInbox />;
 }
