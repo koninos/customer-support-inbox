@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+
+  h1 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+  }
+
+  p {
+    margin: var(--spacing-xs) 0 0;
+    color: var(--color-text-muted);
+  }
+}
+
+.messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 70%;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+
+  p {
+    margin: var(--spacing-sm) 0 0;
+  }
+}
+
+.messageCustomer {
+  align-self: flex-start;
+  background: var(--color-background);
+}
+
+.messageAgent {
+  align-self: flex-end;
+  background: var(--color-text);
+  color: var(--color-surface);
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+
+  time {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+}
+
+.replyForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+
+  label {
+    font-weight: 600;
+  }
+
+  textarea {
+    width: 100%;
+    padding: var(--spacing-sm);
+    resize: vertical;
+  }
+
+  button {
+    align-self: flex-end;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
