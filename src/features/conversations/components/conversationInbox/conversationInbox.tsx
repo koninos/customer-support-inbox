@@ -11,11 +11,15 @@ export function ConversationInbox() {
   const [conversations, setConversations] = useState<ConversationListItem[]>(
     [],
   );
+
   const [selectedConversationId, setSelectedConversationId] = useState<
     number | null
   >(null);
+
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
+
+  const [isConversationLoading, setIsConversationLoading] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +57,8 @@ export function ConversationInbox() {
 
     async function loadConversation() {
       try {
+        setIsConversationLoading(true);
+
         const response = await fetch(
           `/api/conversations/${selectedConversationId}`,
         );
@@ -66,6 +72,8 @@ export function ConversationInbox() {
         setSelectedConversation(data);
       } catch {
         setError("Unable to load conversation.");
+      } finally {
+        setIsConversationLoading(false);
       }
     }
 
@@ -88,8 +96,12 @@ export function ConversationInbox() {
         onSelectConversation={setSelectedConversationId}
       />
 
-      {selectedConversation && (
-        <ConversationDetail conversation={selectedConversation} />
+      {isConversationLoading ? (
+        <p>Loading conversation...</p>
+      ) : (
+        selectedConversation && (
+          <ConversationDetail conversation={selectedConversation} />
+        )
       )}
     </div>
   );
