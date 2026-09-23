@@ -1,59 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ConversationList } from "../conversationList/conversationList";
 import { ConversationDetail } from "../conversationDetail/conversationDetail";
-import styles from "./conversationInbox.module.scss";
 import { Conversation } from "../../types/conversation";
-
-const conversations: Conversation[] = [
-  {
-    id: 1,
-    subject: "Payment charged twice",
-    customer: "John Doe",
-    status: "open",
-    messages: [
-      {
-        id: 1,
-        sender: "John Doe",
-        content: "I was charged twice for my subscription.",
-        timestamp: "10:32 AM",
-        type: "customer",
-      },
-      {
-        id: 2,
-        sender: "Support",
-        content:
-          "I'm sorry about that. I'll look into the duplicate charge for you.",
-        timestamp: "10:35 AM",
-        type: "agent",
-      },
-    ],
-  },
-  {
-    id: 2,
-    subject: "Unable to log in",
-    customer: "Jane Smith",
-    status: "open",
-    messages: [
-      {
-        id: 1,
-        sender: "Jane Smith",
-        content: "I forgot my password",
-        timestamp: "10:32 AM",
-        type: "customer",
-      },
-    ],
-  },
-];
+import styles from "./conversationInbox.module.scss";
 
 export function ConversationInbox() {
-  const [selectedConversationId, setSelectedConversationId] = useState(1);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    number | null
+  >(null);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadConversations() {
+      try {
+        const response = await fetch("api/conversations");
+
+        if (!response.ok) {
+          throw new Error("Failed to load conversations.");
+        }
+
+        const data: Conversation[] = await response.json();
+
+        setConversations(data);
+
+        if (data.length > 0) {
+          setSelectedConversationId(data[0].id);
+        }
+      } catch (error) {
+        setError("Unable to load conversations.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadConversations();
+  }, []);
 
   const selectedConversation = conversations.find(
     (conversation) => conversation.id === selectedConversationId,
   );
+
+  if (isLoading) {
+    return <p>Loading conversations...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className={styles.inbox}>

@@ -3,7 +3,7 @@ import styles from "./conversationList.module.scss";
 
 type ConversationListProps = {
   conversations: ConversationSummary[];
-  selectedConversationId: number;
+  selectedConversationId: number | null;
   onSelectConversation: (id: number) => void;
 };
 
