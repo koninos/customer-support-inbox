@@ -55,12 +55,18 @@ export function ConversationInbox() {
       return;
     }
 
-    async function loadConversation() {
-      try {
-        setIsConversationLoading(true);
+    const controller = new AbortController();
 
+    async function loadConversation() {
+      setIsConversationLoading(true);
+      setError(null);
+
+      try {
         const response = await fetch(
           `/api/conversations/${selectedConversationId}`,
+          {
+            signal: controller.signal,
+          },
         );
 
         if (!response.ok) {
@@ -70,7 +76,11 @@ export function ConversationInbox() {
         const data: Conversation = await response.json();
 
         setSelectedConversation(data);
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
+
         setError("Unable to load conversation.");
       } finally {
         setIsConversationLoading(false);
@@ -78,6 +88,10 @@ export function ConversationInbox() {
     }
 
     loadConversation();
+
+    return () => {
+      controller.abort();
+    };
   }, [selectedConversationId]);
 
   if (isLoading) {

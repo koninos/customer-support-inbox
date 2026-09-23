@@ -39,4 +39,27 @@ export const conversations: Conversation[] = [
       },
     ],
   },
+  {
+    id: 3,
+    subject: "Payment charged twice",
+    customer: "Mike Ross",
+    status: "open",
+    messages: [
+      {
+        id: 1,
+        sender: "Mike Ross",
+        content: "I was charged twice for my subscription.",
+        timestamp: "13:32 AM",
+        type: "customer",
+      },
+      {
+        id: 2,
+        sender: "Support",
+        content:
+          "I'm sorry about that. I'll look into the duplicate charge for you.",
+        timestamp: "10:35 AM",
+        type: "agent",
+      },
+    ],
+  },
 ];
