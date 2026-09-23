@@ -12,6 +12,11 @@ type Errors = {
   conversation: string | null;
 };
 
+type LoadingState = {
+  conversationsList: boolean;
+  conversation: boolean;
+};
+
 export function ConversationInbox() {
   const [conversations, setConversations] = useState<ConversationListItem[]>(
     [],
@@ -24,9 +29,11 @@ export function ConversationInbox() {
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
 
-  const [isConversationLoading, setIsConversationLoading] = useState(false);
+  const [loading, setLoading] = useState<LoadingState>({
+    conversationsList: true,
+    conversation: false,
+  });
 
-  const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState<Errors>({
     conversationsList: null,
     conversation: null,
@@ -54,7 +61,10 @@ export function ConversationInbox() {
           conversationsList: "Unable to load conversations.",
         }));
       } finally {
-        setIsLoading(false);
+        setLoading((prev) => ({
+          ...prev,
+          conversationsList: false,
+        }));
       }
     }
 
@@ -69,7 +79,10 @@ export function ConversationInbox() {
     const controller = new AbortController();
 
     async function loadConversation() {
-      setIsConversationLoading(true);
+      setLoading((prev) => ({
+        ...prev,
+        conversation: true,
+      }));
       setErrors((prev) => ({
         ...prev,
         conversation: null,
@@ -100,7 +113,10 @@ export function ConversationInbox() {
           conversation: "Unable to load conversation.",
         }));
       } finally {
-        setIsConversationLoading(false);
+        setLoading((prev) => ({
+          ...prev,
+          conversation: false,
+        }));
       }
     }
 
@@ -111,7 +127,7 @@ export function ConversationInbox() {
     };
   }, [selectedConversationId]);
 
-  if (isLoading) {
+  if (loading.conversationsList) {
     return <p>Loading conversations...</p>;
   }
 
@@ -120,7 +136,7 @@ export function ConversationInbox() {
   }
 
   const shouldShowDetails =
-    !isConversationLoading && !errors.conversation && selectedConversation;
+    !loading.conversation && !errors.conversation && selectedConversation;
 
   return (
     <div className={styles.inbox}>
@@ -130,7 +146,7 @@ export function ConversationInbox() {
         onSelectConversation={setSelectedConversationId}
       />
 
-      {isConversationLoading && <p>Loading conversation...</p>}
+      {loading.conversation && <p>Loading conversation...</p>}
 
       {errors.conversation && <p>{errors.conversation}</p>}
 
