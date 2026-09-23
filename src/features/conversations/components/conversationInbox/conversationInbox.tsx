@@ -7,6 +7,11 @@ import { ConversationDetail } from "../conversationDetail/conversationDetail";
 import { Conversation, ConversationListItem } from "../../types/conversation";
 import styles from "./conversationInbox.module.scss";
 
+type Errors = {
+  conversationsList: string | null;
+  conversation: string | null;
+};
+
 export function ConversationInbox() {
   const [conversations, setConversations] = useState<ConversationListItem[]>(
     [],
@@ -22,7 +27,10 @@ export function ConversationInbox() {
   const [isConversationLoading, setIsConversationLoading] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Errors>({
+    conversationsList: null,
+    conversation: null,
+  });
 
   useEffect(() => {
     async function loadConversations() {
@@ -41,7 +49,10 @@ export function ConversationInbox() {
           setSelectedConversationId(data[0].id);
         }
       } catch (error) {
-        setError("Unable to load conversations.");
+        setErrors((prev) => ({
+          ...prev,
+          conversationsList: "Unable to load conversations.",
+        }));
       } finally {
         setIsLoading(false);
       }
@@ -59,7 +70,10 @@ export function ConversationInbox() {
 
     async function loadConversation() {
       setIsConversationLoading(true);
-      setError(null);
+      setErrors((prev) => ({
+        ...prev,
+        conversation: null,
+      }));
 
       try {
         const response = await fetch(
@@ -81,7 +95,10 @@ export function ConversationInbox() {
           return;
         }
 
-        setError("Unable to load conversation.");
+        setErrors((prev) => ({
+          ...prev,
+          conversation: "Unable to load conversation.",
+        }));
       } finally {
         setIsConversationLoading(false);
       }
@@ -98,9 +115,12 @@ export function ConversationInbox() {
     return <p>Loading conversations...</p>;
   }
 
-  if (error) {
-    return <p>{error}</p>;
+  if (errors.conversationsList) {
+    return <p>{errors.conversationsList}</p>;
   }
+
+  const shouldShowDetails =
+    !isConversationLoading && !errors.conversation && selectedConversation;
 
   return (
     <div className={styles.inbox}>
@@ -110,12 +130,12 @@ export function ConversationInbox() {
         onSelectConversation={setSelectedConversationId}
       />
 
-      {isConversationLoading ? (
-        <p>Loading conversation...</p>
-      ) : (
-        selectedConversation && (
-          <ConversationDetail conversation={selectedConversation} />
-        )
+      {isConversationLoading && <p>Loading conversation...</p>}
+
+      {errors.conversation && <p>{errors.conversation}</p>}
+
+      {shouldShowDetails && (
+        <ConversationDetail conversation={selectedConversation} />
       )}
     </div>
   );
