@@ -1,4 +1,4 @@
-export type ConversationSummary = {
+export type ConversationListItem = {
   id: number;
   subject: string;
   customer: string;
@@ -13,6 +13,6 @@ export type Message = {
   type: "customer" | "agent";
 };
 
-export type Conversation = ConversationSummary & {
+export type Conversation = ConversationListItem & {
   messages: Message[];
 };

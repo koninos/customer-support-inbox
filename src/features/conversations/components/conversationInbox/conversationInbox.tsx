@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 
 import { ConversationList } from "../conversationList/conversationList";
 import { ConversationDetail } from "../conversationDetail/conversationDetail";
-import { Conversation } from "../../types/conversation";
+import { Conversation, ConversationListItem } from "../../types/conversation";
 import styles from "./conversationInbox.module.scss";
 
 export function ConversationInbox() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<ConversationListItem[]>(
+    [],
+  );
   const [selectedConversationId, setSelectedConversationId] = useState<
     number | null
   >(null);
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +29,7 @@ export function ConversationInbox() {
           throw new Error("Failed to load conversations.");
         }
 
-        const data: Conversation[] = await response.json();
+        const data: ConversationListItem[] = await response.json();
 
         setConversations(data);
 
@@ -42,9 +46,31 @@ export function ConversationInbox() {
     loadConversations();
   }, []);
 
-  const selectedConversation = conversations.find(
-    (conversation) => conversation.id === selectedConversationId,
-  );
+  useEffect(() => {
+    if (selectedConversationId === null) {
+      return;
+    }
+
+    async function loadConversation() {
+      try {
+        const response = await fetch(
+          `/api/conversations/${selectedConversationId}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load conversation.");
+        }
+
+        const data: Conversation = await response.json();
+
+        setSelectedConversation(data);
+      } catch {
+        setError("Unable to load conversation.");
+      }
+    }
+
+    loadConversation();
+  }, [selectedConversationId]);
 
   if (isLoading) {
     return <p>Loading conversations...</p>;

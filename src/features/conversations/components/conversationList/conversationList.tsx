@@ -1,8 +1,8 @@
-import { ConversationSummary } from "../../types/conversation";
+import { ConversationListItem } from "../../types/conversation";
 import styles from "./conversationList.module.scss";
 
 type ConversationListProps = {
-  conversations: ConversationSummary[];
+  conversations: ConversationListItem[];
   selectedConversationId: number | null;
   onSelectConversation: (id: number) => void;
 };
