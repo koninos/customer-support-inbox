@@ -9,8 +9,16 @@ export async function GET(
   context: RouteContext,
 ): Promise<Response> {
   const { id } = await context.params;
+  const conversationId = Number(id);
 
-  const conversation = conversations.find((conv) => conv.id === Number(id));
+  if (!Number.isInteger(conversationId) || conversationId <= 0) {
+    return Response.json(
+      { message: "Invalid conversation ID." },
+      { status: 400 },
+    );
+  }
+
+  const conversation = conversations.find((conv) => conv.id === conversationId);
 
   if (!conversation) {
     return Response.json(
