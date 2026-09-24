@@ -1,9 +1,6 @@
 import pool from "@/lib/db";
 
-import {
-  CreateMessageRequest,
-  MessageResponse,
-} from "@/features/conversations/types/api";
+import { MessageResponse } from "@/features/conversations/types/api";
 import { MessageRow } from "@/features/conversations/types/database";
 import { createMessageRequestSchema } from "@/features/conversations/schemas/api";
 

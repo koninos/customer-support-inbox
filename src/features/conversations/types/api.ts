@@ -17,10 +17,6 @@ export type ConversationResponse = ConversationListItemResponse & {
   messages: MessageResponse[];
 };
 
-export type CreateMessageRequest = {
-  content: string;
-};
-
 export type CreateCustomerConversationRequest = {
   customerId: number;
   subject: string;
