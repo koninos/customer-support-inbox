@@ -1,11 +1,63 @@
-import { Conversation } from "../../types/ui";
+import { FormEvent, useState } from "react";
+import { Conversation, Message } from "../../types/ui";
 import styles from "./conversationDetail.module.scss";
 
 type ConversationDetailProps = {
   conversation: Conversation;
+  onMessageCreated: (message: Message) => void;
 };
 
-export function ConversationDetail({ conversation }: ConversationDetailProps) {
+export function ConversationDetail({
+  conversation,
+  onMessageCreated,
+}: ConversationDetailProps) {
+  const [replyMessage, setReplyMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!replyMessage.trim()) {
+      return;
+    }
+
+    setIsSending(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/conversations/${conversation.id}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: replyMessage,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send message.");
+      }
+
+      const message: Message = await response.json();
+
+      onMessageCreated(message);
+      setReplyMessage("");
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to send message.",
+      );
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  const isDisabled = isSending || !replyMessage.trim();
+
   return (
     <section className={styles.container}>
       <header className={styles.header}>
@@ -42,17 +94,23 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
         )}
       </div>
 
-      <form className={styles.replyForm}>
+      <form className={styles.replyForm} onSubmit={handleSubmit}>
         <label htmlFor="reply">Reply</label>
 
         <textarea
           id="reply"
           name="reply"
+          value={replyMessage}
+          onChange={(event) => setReplyMessage(event.target.value)}
           placeholder="Write a reply..."
           rows={4}
         />
 
-        <button type="submit">Send</button>
+        {error && <p role="alert">{error}</p>}
+
+        <button type="submit" disabled={isDisabled}>
+          {isSending ? "Sending..." : "Send"}
+        </button>
       </form>
     </section>
   );

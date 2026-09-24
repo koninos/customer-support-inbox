@@ -151,7 +151,19 @@ export function ConversationInbox() {
       {errors.conversation && <p>{errors.conversation}</p>}
 
       {shouldShowDetails && (
-        <ConversationDetail conversation={selectedConversation} />
+        <ConversationDetail
+          conversation={selectedConversation}
+          onMessageCreated={(message) => {
+            setSelectedConversation((current) =>
+              current
+                ? {
+                    ...current,
+                    messages: [...current.messages, message],
+                  }
+                : current,
+            );
+          }}
+        />
       )}
     </div>
   );

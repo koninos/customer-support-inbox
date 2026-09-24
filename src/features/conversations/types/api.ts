@@ -16,3 +16,7 @@ export type MessageResponse = {
 export type ConversationResponse = ConversationListItemResponse & {
   messages: MessageResponse[];
 };
+
+export type CreateMessageRequest = {
+  content: string;
+};
