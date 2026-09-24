@@ -54,7 +54,10 @@ export async function GET(
     `
     SELECT
       messages.id,
-      customers.name AS "sender",
+      CASE
+        WHEN messages.sender_type = 'customer' THEN customers.name
+        ELSE 'Support Agent'
+      END AS sender,
       messages.body,
       messages.created_at AS "createdAt",
       messages.sender_type AS "senderType"
