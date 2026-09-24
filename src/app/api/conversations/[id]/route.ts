@@ -75,7 +75,7 @@ export async function GET(
     id: Number(message.id),
     sender: message.sender,
     content: message.body,
-    timestamp: message.createdAt.toISOString(),
+    createdAt: message.createdAt.toISOString(),
     type: message.senderType,
   }));
 

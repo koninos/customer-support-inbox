@@ -9,7 +9,7 @@ export type MessageResponse = {
   id: number;
   sender: string;
   content: string;
-  timestamp: string;
+  createdAt: string;
   type: "customer" | "agent";
 };
 

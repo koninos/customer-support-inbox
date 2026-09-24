@@ -15,21 +15,30 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
 
       <div className={styles.messages}>
         {conversation.messages.map(
-          ({ id, type, sender, timestamp, content }) => (
-            <article
-              key={id}
-              className={`${styles.message} ${
-                type === "agent" ? styles.messageAgent : styles.messageCustomer
-              }`}
-            >
-              <div className={styles.messageHeader}>
-                <strong>{sender}</strong>
-                <time>{timestamp}</time>
-              </div>
+          ({ id, type, sender, createdAt, content }) => {
+            const messageTime = new Date(createdAt).toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
 
-              <p>{content}</p>
-            </article>
-          ),
+            return (
+              <article
+                key={id}
+                className={`${styles.message} ${
+                  type === "agent"
+                    ? styles.messageAgent
+                    : styles.messageCustomer
+                }`}
+              >
+                <div className={styles.messageHeader}>
+                  <strong>{sender}</strong>
+                  <time dateTime={createdAt}>{messageTime}</time>
+                </div>
+
+                <p>{content}</p>
+              </article>
+            );
+          },
         )}
       </div>
 
