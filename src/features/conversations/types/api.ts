@@ -22,3 +22,8 @@ export type CreateCustomerConversationRequest = {
   subject: string;
   content: string;
 };
+
+export type CustomerResponse = {
+  id: number;
+  name: string;
+};

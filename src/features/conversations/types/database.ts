@@ -12,3 +12,8 @@ export type MessageRow = {
   createdAt: Date;
   senderType: "customer" | "agent";
 };
+
+export type CustomerRow = {
+  id: string;
+  name: string;
+};
