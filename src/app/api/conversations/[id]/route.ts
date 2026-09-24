@@ -72,8 +72,6 @@ export async function GET(
     [conversationId],
   );
 
-  console.log(messagesResult.rows);
-
   const messages: MessageResponse[] = messagesResult.rows.map((message) => ({
     id: Number(message.id),
     sender: message.sender,

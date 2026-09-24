@@ -20,3 +20,9 @@ export type ConversationResponse = ConversationListItemResponse & {
 export type CreateMessageRequest = {
   content: string;
 };
+
+export type CreateCustomerConversationRequest = {
+  customerId: number;
+  subject: string;
+  content: string;
+};
