@@ -5,6 +5,7 @@ import {
   MessageResponse,
 } from "@/features/conversations/types/api";
 import { MessageRow } from "@/features/conversations/types/database";
+import { createMessageRequestSchema } from "@/features/conversations/schemas/api";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -21,14 +22,15 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  const body = (await request.json()) as CreateMessageRequest;
+  const body = await request.json();
 
-  if (!body.content?.trim()) {
-    return Response.json(
-      { message: "Message content is required." },
-      { status: 400 },
-    );
+  const parsedBody = createMessageRequestSchema.safeParse(body);
+
+  if (!parsedBody.success) {
+    return Response.json({ message: "Invalid request body." }, { status: 400 });
   }
+
+  const content = parsedBody.data.content;
 
   const conversationResult = await pool.query(
     `
@@ -60,7 +62,7 @@ export async function POST(request: Request, context: RouteContext) {
         created_at AS "createdAt",
         sender_type AS "senderType"
     `,
-    [conversationId, body.content.trim()],
+    [conversationId, content],
   );
 
   const message = messageResult.rows[0];
