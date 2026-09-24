@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { ConversationList } from "../conversationList/conversationList";
 import { ConversationDetail } from "../conversationDetail/conversationDetail";
-import { Conversation, ConversationListItem } from "../../types/conversation";
+import { Conversation, ConversationListItem } from "../../types/ui";
 import styles from "./conversationInbox.module.scss";
 
 type Errors = {

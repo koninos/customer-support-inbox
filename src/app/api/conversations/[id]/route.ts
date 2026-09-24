@@ -1,5 +1,12 @@
 import pool from "@/lib/db";
-import { Conversation } from "@/features/conversations/types/conversation";
+import {
+  ConversationResponse,
+  MessageResponse,
+} from "@/features/conversations/types/api";
+import {
+  ConversationListItemRow,
+  MessageRow,
+} from "@/features/conversations/types/database";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -19,18 +26,13 @@ export async function GET(
     );
   }
 
-  const conversationResult = await pool.query<{
-    id: number;
-    subject: string;
-    status: "open" | "closed";
-    customer: string;
-  }>(
+  const conversationResult = await pool.query<ConversationListItemRow>(
     `
       SELECT
         conversations.id,
         conversations.subject,
         conversations.status,
-        customers.name AS customer
+        customers.name AS "customer"
       FROM conversations
       INNER JOIN customers
         ON conversations.customer_id = customers.id
@@ -48,20 +50,14 @@ export async function GET(
 
   const conversation = conversationResult.rows[0];
 
-  const messagesResult = await pool.query<{
-    id: number;
-    sender: string;
-    content: string;
-    timestamp: string;
-    type: "customer" | "agent";
-  }>(
+  const messagesResult = await pool.query<MessageRow>(
     `
     SELECT
       messages.id,
-      customers.name AS sender,
-      messages.body AS content,
-      messages.created_at AS timestamp,
-      messages.sender_type AS type
+      customers.name AS "sender",
+      messages.body,
+      messages.created_at AS "createdAt",
+      messages.sender_type AS "senderType"
     FROM messages
     INNER JOIN conversations
       ON messages.conversation_id = conversations.id
@@ -73,10 +69,20 @@ export async function GET(
     [conversationId],
   );
 
-  const result: Conversation = {
+  console.log(messagesResult.rows);
+
+  const messages: MessageResponse[] = messagesResult.rows.map((message) => ({
+    id: Number(message.id),
+    sender: message.sender,
+    content: message.body,
+    timestamp: message.createdAt.toISOString(),
+    type: message.senderType,
+  }));
+
+  const response: ConversationResponse = {
     ...conversation,
-    messages: messagesResult.rows,
+    messages,
   };
 
-  return Response.json(result);
+  return Response.json(response);
 }

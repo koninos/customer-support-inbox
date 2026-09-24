@@ -1,4 +1,4 @@
-import { Conversation } from "../../types/conversation";
+import { Conversation } from "../../types/ui";
 import styles from "./conversationDetail.module.scss";
 
 type ConversationDetailProps = {
