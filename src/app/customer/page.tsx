@@ -5,17 +5,16 @@ import { useEffect, useState } from "react";
 import {
   ConversationListItemResponse,
   ConversationResponse,
-  CustomerResponse,
 } from "@/features/conversations/types/api";
 
+import { CustomerSelector } from "@/features/customers/components/customerSelector/customerSelector";
+import { ConversationList } from "@/features/customers/components/conversationList/conversationList";
+import { ConversationDetail } from "@/features/customers/components/conversationDetail/conversationDetail";
+import { NewConversationForm } from "@/features/customers/components/newConversationForm/newConversationForm";
+import { useCustomers } from "@/features/customers/hooks/useCustomers";
 import styles from "./page.module.scss";
-import { CustomerSelector } from "../../features/customers/components/customerSelector/customerSelector";
-import { ConversationList } from "../../features/customers/components/conversationList/conversationList";
-import { ConversationDetail } from "../../features/customers/components/conversationDetail/conversationDetail";
-import { NewConversationForm } from "../../features/customers/components/newConversationForm/newConversationForm";
 
 export default function CustomerPage() {
-  const [customers, setCustomers] = useState<CustomerResponse[]>([]);
   const [customerId, setCustomerId] = useState("");
 
   const [conversations, setConversations] = useState<
@@ -32,21 +31,11 @@ export default function CustomerPage() {
 
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
 
-  useEffect(() => {
-    async function fetchCustomers() {
-      const response = await fetch("/api/customers");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch customers.");
-      }
-
-      const data: CustomerResponse[] = await response.json();
-
-      setCustomers(data);
-    }
-
-    fetchCustomers();
-  }, []);
+  const {
+    customers,
+    isLoading: isLoadingCustomers,
+    error: customersError,
+  } = useCustomers();
 
   useEffect(() => {
     if (!customerId) {
@@ -132,6 +121,10 @@ export default function CustomerPage() {
         </header>
 
         <div className={styles.form}>
+          {isLoadingCustomers ? <p>Loading customers...</p> : null}
+
+          {customersError ? <p role="alert">{customersError}</p> : null}
+
           <CustomerSelector
             customers={customers}
             customerId={customerId}
