@@ -11,6 +11,7 @@ import {
 
 import styles from "./page.module.scss";
 import { CustomerSelector } from "./components/customerSelector/customerSelector";
+import { ConversationList } from "./components/conversationList/conversationList";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
@@ -226,31 +227,15 @@ export default function CustomerPage() {
 
           {customerId ? (
             <>
-              <section>
-                <h2>My conversations</h2>
-
-                {isLoadingConversations ? (
-                  <p>Loading conversations...</p>
-                ) : conversations.length === 0 ? (
-                  <p>You do not have any conversations yet.</p>
-                ) : (
-                  <ul>
-                    {conversations.map((conversation) => (
-                      <li key={conversation.id}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsCreatingConversation(false);
-                            setSelectedConversationId(conversation.id);
-                          }}
-                        >
-                          {conversation.subject}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
+              <ConversationList
+                conversations={conversations}
+                selectedConversationId={selectedConversationId}
+                isLoading={isLoadingConversations}
+                onSelectConversation={(conversationId) => {
+                  setIsCreatingConversation(false);
+                  setSelectedConversationId(conversationId);
+                }}
+              />
 
               {!isCreatingConversation && selectedConversation ? (
                 <section>
