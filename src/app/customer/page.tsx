@@ -93,7 +93,7 @@ export default function CustomerPage() {
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
-            <label htmlFor="customer">Customer</label>
+            <label htmlFor="customer">Simulated customer</label>
 
             <select
               id="customer"

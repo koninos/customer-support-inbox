@@ -9,3 +9,8 @@ export const createCustomerConversationRequestSchema = z.object({
   subject: z.string().trim().min(1, "Subject is required."),
   content: z.string().trim().min(1, "Message content is required."),
 });
+
+export const createCustomerMessageRequestSchema = z.object({
+  customerId: z.number().int().positive(),
+  content: z.string().trim().min(1, "Message content is required."),
+});
