@@ -9,10 +9,10 @@ import {
 } from "@/features/conversations/types/api";
 
 import styles from "./page.module.scss";
-import { CustomerSelector } from "./components/customerSelector/customerSelector";
-import { ConversationList } from "./components/conversationList/conversationList";
-import { ConversationDetail } from "./components/conversationDetail/conversationDetail";
-import { NewConversationForm } from "./components/newConversationForm/newConversationForm";
+import { CustomerSelector } from "../../features/customers/components/customerSelector/customerSelector";
+import { ConversationList } from "../../features/customers/components/conversationList/conversationList";
+import { ConversationDetail } from "../../features/customers/components/conversationDetail/conversationDetail";
+import { NewConversationForm } from "../../features/customers/components/newConversationForm/newConversationForm";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
