@@ -1,6 +1,6 @@
 "use client";
 
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ConversationListItemResponse,
@@ -12,17 +12,11 @@ import styles from "./page.module.scss";
 import { CustomerSelector } from "./components/customerSelector/customerSelector";
 import { ConversationList } from "./components/conversationList/conversationList";
 import { ConversationDetail } from "./components/conversationDetail/conversationDetail";
+import { NewConversationForm } from "./components/newConversationForm/newConversationForm";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
   const [customerId, setCustomerId] = useState("");
-
-  const [subject, setSubject] = useState("");
-  const [content, setContent] = useState("");
-
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [conversations, setConversations] = useState<
     ConversationListItemResponse[]
@@ -111,49 +105,22 @@ export default function CustomerPage() {
     fetchConversation();
   }, [selectedConversationId]);
 
-  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const startNewConversationButton = (
+    <button
+      type="button"
+      className={styles.newConversationButton}
+      onClick={() => setIsCreatingConversation(true)}
+    >
+      + Start New Conversation
+    </button>
+  );
 
-    setSuccess(false);
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/customers/conversations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customerId: Number(customerId),
-          subject,
-          content,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create conversation.");
-      }
-
-      const conversation: ConversationResponse = await response.json();
-
-      setConversations((current) => [conversation, ...current]);
-      setSelectedConversationId(conversation.id);
-      setSelectedConversation(conversation);
-
-      setSubject("");
-      setContent("");
-      setSuccess(true);
-      setIsCreatingConversation(false);
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to create conversation.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+  function handleCustomerChange(nextCustomerId: string) {
+    setCustomerId(nextCustomerId);
+    setConversations([]);
+    setSelectedConversationId(null);
+    setSelectedConversation(null);
+    setIsCreatingConversation(false);
   }
 
   return (
@@ -168,7 +135,7 @@ export default function CustomerPage() {
           <CustomerSelector
             customers={customers}
             customerId={customerId}
-            onCustomerChange={setCustomerId}
+            onCustomerChange={handleCustomerChange}
           />
 
           {customerId ? (
@@ -184,91 +151,41 @@ export default function CustomerPage() {
               />
 
               {!isCreatingConversation && selectedConversation ? (
-                <ConversationDetail
-                  conversation={selectedConversation}
-                  customerId={customerId}
-                  isLoading={isLoadingConversation}
-                  onMessageCreated={(message) => {
-                    setSelectedConversation((current) =>
-                      current
-                        ? {
-                            ...current,
-                            messages: [...current.messages, message],
-                          }
-                        : current,
-                    );
-                  }}
-                />
+                <>
+                  <ConversationDetail
+                    conversation={selectedConversation}
+                    customerId={customerId}
+                    isLoading={isLoadingConversation}
+                    onMessageCreated={(message) => {
+                      setSelectedConversation((current) =>
+                        current
+                          ? {
+                              ...current,
+                              messages: [...current.messages, message],
+                            }
+                          : current,
+                      );
+                    }}
+                  />
+                  {startNewConversationButton}
+                </>
               ) : null}
 
-              {!isCreatingConversation && !selectedConversation ? (
-                <button
-                  type="button"
-                  onClick={() => setIsCreatingConversation(true)}
-                >
-                  + Start New Conversation
-                </button>
-              ) : null}
+              {!isCreatingConversation && !selectedConversation
+                ? startNewConversationButton
+                : null}
 
               {isCreatingConversation ? (
-                <section>
-                  <h2>Start a new conversation</h2>
-
-                  <form className={styles.form} onSubmit={handleSubmit}>
-                    <div className={styles.field}>
-                      <label htmlFor="subject">Subject</label>
-
-                      <input
-                        id="subject"
-                        type="text"
-                        value={subject}
-                        onChange={(event) => setSubject(event.target.value)}
-                      />
-                    </div>
-
-                    <div className={styles.field}>
-                      <label htmlFor="content">Message</label>
-
-                      <textarea
-                        id="content"
-                        value={content}
-                        onChange={(event) => setContent(event.target.value)}
-                        rows={6}
-                      />
-                    </div>
-
-                    {success ? (
-                      <p className={styles.success} role="status">
-                        Conversation created successfully.
-                      </p>
-                    ) : null}
-
-                    {error ? (
-                      <p className={styles.error} role="alert">
-                        {error}
-                      </p>
-                    ) : null}
-
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() => setIsCreatingConversation(false)}
-                      >
-                        Cancel
-                      </button>
-
-                      <button
-                        type="submit"
-                        className={styles.submit}
-                        disabled={
-                          isSubmitting || !subject.trim() || !content.trim()
-                        }
-                      >
-                        {isSubmitting ? "Creating..." : "Create Conversation"}
-                      </button>
-                    </div>
-                  </form>
-                </section>
+                <NewConversationForm
+                  customerId={customerId}
+                  onConversationCreated={(conversation) => {
+                    setConversations((current) => [conversation, ...current]);
+                    setSelectedConversationId(conversation.id);
+                    setSelectedConversation(conversation);
+                    setIsCreatingConversation(false);
+                  }}
+                  onCancel={() => setIsCreatingConversation(false)}
+                />
               ) : null}
             </>
           ) : null}

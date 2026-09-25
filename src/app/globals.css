@@ -15,6 +15,16 @@
 
   --color-border: #d0d7de;
 
+  --color-shadow: rgb(0 0 0 / 8%);
+
+  --color-success-text: #1f6b35;
+  --color-success-background: #f0f9f2;
+  --color-success-border: #a7d7b5;
+
+  --color-error-text: #a32626;
+  --color-error-background: #fff4f4;
+  --color-error-border: #e0aaaa;
+
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
