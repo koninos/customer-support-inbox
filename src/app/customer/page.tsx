@@ -2,28 +2,22 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  ConversationListItemResponse,
-  ConversationResponse,
-} from "@/features/conversations/types/api";
+import { ConversationResponse } from "@/features/conversations/types/api";
 
 import { CustomerSelector } from "@/features/customers/components/customerSelector/customerSelector";
 import { ConversationList } from "@/features/customers/components/conversationList/conversationList";
 import { ConversationDetail } from "@/features/customers/components/conversationDetail/conversationDetail";
 import { NewConversationForm } from "@/features/customers/components/newConversationForm/newConversationForm";
 import { useCustomers } from "@/features/customers/hooks/useCustomers";
+import { useCustomerConversations } from "@/features/conversations/hooks/useCustomerConversations";
 import styles from "./page.module.scss";
 
 export default function CustomerPage() {
   const [customerId, setCustomerId] = useState("");
 
-  const [conversations, setConversations] = useState<
-    ConversationListItemResponse[]
-  >([]);
   const [selectedConversationId, setSelectedConversationId] = useState<
     number | null
   >(null);
-  const [isLoadingConversations, setIsLoadingConversations] = useState(false);
 
   const [selectedConversation, setSelectedConversation] =
     useState<ConversationResponse | null>(null);
@@ -37,34 +31,13 @@ export default function CustomerPage() {
     error: customersError,
   } = useCustomers();
 
-  useEffect(() => {
-    if (!customerId) {
-      return;
-    }
-
-    async function fetchConversations() {
-      setIsLoadingConversations(true);
-
-      try {
-        const response = await fetch(
-          `/api/customers/${customerId}/conversations`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch conversations.");
-        }
-
-        const data: ConversationListItemResponse[] = await response.json();
-
-        setConversations(data);
-        setSelectedConversationId(data[0]?.id ?? null);
-      } finally {
-        setIsLoadingConversations(false);
-      }
-    }
-
-    fetchConversations();
-  }, [customerId]);
+  const {
+    conversations,
+    isLoading: isLoadingConversations,
+    error: conversationsError,
+    addConversation,
+    clearConversations,
+  } = useCustomerConversations(customerId);
 
   useEffect(() => {
     if (selectedConversationId === null) {
@@ -105,10 +78,9 @@ export default function CustomerPage() {
   );
 
   function handleCustomerChange(nextCustomerId: string) {
+    clearConversations();
     setCustomerId(nextCustomerId);
-    setConversations([]);
     setSelectedConversationId(null);
-    setSelectedConversation(null);
     setIsCreatingConversation(false);
   }
 
@@ -133,15 +105,19 @@ export default function CustomerPage() {
 
           {customerId ? (
             <>
-              <ConversationList
-                conversations={conversations}
-                selectedConversationId={selectedConversationId}
-                isLoading={isLoadingConversations}
-                onSelectConversation={(conversationId) => {
-                  setIsCreatingConversation(false);
-                  setSelectedConversationId(conversationId);
-                }}
-              />
+              {conversationsError ? (
+                <p role="alert">{conversationsError}</p>
+              ) : (
+                <ConversationList
+                  conversations={conversations}
+                  selectedConversationId={selectedConversationId}
+                  isLoading={isLoadingConversations}
+                  onSelectConversation={(conversationId) => {
+                    setIsCreatingConversation(false);
+                    setSelectedConversationId(conversationId);
+                  }}
+                />
+              )}
 
               {!isCreatingConversation && selectedConversation ? (
                 <>
@@ -172,7 +148,7 @@ export default function CustomerPage() {
                 <NewConversationForm
                   customerId={customerId}
                   onConversationCreated={(conversation) => {
-                    setConversations((current) => [conversation, ...current]);
+                    addConversation(conversation);
                     setSelectedConversationId(conversation.id);
                     setSelectedConversation(conversation);
                     setIsCreatingConversation(false);
