@@ -82,6 +82,7 @@ export async function GET(
 
   const response: ConversationResponse = {
     ...conversation,
+    id: Number(conversation.id),
     messages,
   };
 

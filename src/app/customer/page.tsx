@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { ConversationResponse } from "@/features/conversations/types/api";
+import { useState } from "react";
 
 import { CustomerSelector } from "@/features/customers/components/customerSelector/customerSelector";
 import { ConversationList } from "@/features/customers/components/conversationList/conversationList";
@@ -10,6 +8,7 @@ import { ConversationDetail } from "@/features/customers/components/conversation
 import { NewConversationForm } from "@/features/customers/components/newConversationForm/newConversationForm";
 import { useCustomers } from "@/features/customers/hooks/useCustomers";
 import { useCustomerConversations } from "@/features/conversations/hooks/useCustomerConversations";
+import { useConversation } from "@/features/conversations/hooks/useConversation";
 import styles from "./page.module.scss";
 
 export default function CustomerPage() {
@@ -18,10 +17,6 @@ export default function CustomerPage() {
   const [selectedConversationId, setSelectedConversationId] = useState<
     number | null
   >(null);
-
-  const [selectedConversation, setSelectedConversation] =
-    useState<ConversationResponse | null>(null);
-  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
 
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
 
@@ -39,33 +34,12 @@ export default function CustomerPage() {
     clearConversations,
   } = useCustomerConversations(customerId);
 
-  useEffect(() => {
-    if (selectedConversationId === null) {
-      return;
-    }
-
-    async function fetchConversation() {
-      setIsLoadingConversation(true);
-
-      try {
-        const response = await fetch(
-          `/api/conversations/${selectedConversationId}`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch conversation.");
-        }
-
-        const data: ConversationResponse = await response.json();
-
-        setSelectedConversation(data);
-      } finally {
-        setIsLoadingConversation(false);
-      }
-    }
-
-    fetchConversation();
-  }, [selectedConversationId]);
+  const {
+    conversation: selectedConversation,
+    isLoading: isLoadingConversation,
+    error: conversationError,
+    addMessage,
+  } = useConversation(selectedConversationId);
 
   const startNewConversationButton = (
     <button
@@ -119,22 +93,19 @@ export default function CustomerPage() {
                 />
               )}
 
-              {!isCreatingConversation && selectedConversation ? (
+              {conversationError ? (
+                <p role="alert">{conversationError}</p>
+              ) : null}
+
+              {!isCreatingConversation &&
+              selectedConversation &&
+              !conversationError ? (
                 <>
                   <ConversationDetail
                     conversation={selectedConversation}
                     customerId={customerId}
                     isLoading={isLoadingConversation}
-                    onMessageCreated={(message) => {
-                      setSelectedConversation((current) =>
-                        current
-                          ? {
-                              ...current,
-                              messages: [...current.messages, message],
-                            }
-                          : current,
-                      );
-                    }}
+                    onMessageCreated={addMessage}
                   />
                   {startNewConversationButton}
                 </>
@@ -150,7 +121,6 @@ export default function CustomerPage() {
                   onConversationCreated={(conversation) => {
                     addConversation(conversation);
                     setSelectedConversationId(conversation.id);
-                    setSelectedConversation(conversation);
                     setIsCreatingConversation(false);
                   }}
                   onCancel={() => setIsCreatingConversation(false)}
