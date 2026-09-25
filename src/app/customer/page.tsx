@@ -6,12 +6,12 @@ import {
   ConversationListItemResponse,
   ConversationResponse,
   CustomerResponse,
-  MessageResponse,
 } from "@/features/conversations/types/api";
 
 import styles from "./page.module.scss";
 import { CustomerSelector } from "./components/customerSelector/customerSelector";
 import { ConversationList } from "./components/conversationList/conversationList";
+import { ConversationDetail } from "./components/conversationDetail/conversationDetail";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
@@ -35,10 +35,6 @@ export default function CustomerPage() {
   const [selectedConversation, setSelectedConversation] =
     useState<ConversationResponse | null>(null);
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
-
-  const [reply, setReply] = useState("");
-  const [isSendingReply, setIsSendingReply] = useState(false);
-  const [replyError, setReplyError] = useState<string | null>(null);
 
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
 
@@ -160,56 +156,6 @@ export default function CustomerPage() {
     }
   }
 
-  async function handleReplySubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!selectedConversation) {
-      return;
-    }
-
-    setIsSendingReply(true);
-    setReplyError(null);
-
-    try {
-      const response = await fetch(
-        `/api/customers/conversations/${selectedConversation.id}/messages`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            customerId: Number(customerId),
-            content: reply,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to send reply.");
-      }
-
-      const message: MessageResponse = await response.json();
-
-      setSelectedConversation((current) =>
-        current
-          ? {
-              ...current,
-              messages: [...current.messages, message],
-            }
-          : current,
-      );
-
-      setReply("");
-    } catch (error) {
-      setReplyError(
-        error instanceof Error ? error.message : "Failed to send reply.",
-      );
-    } finally {
-      setIsSendingReply(false);
-    }
-  }
-
   return (
     <main className={styles.page}>
       <section className={styles.card}>
@@ -238,65 +184,21 @@ export default function CustomerPage() {
               />
 
               {!isCreatingConversation && selectedConversation ? (
-                <section>
-                  <h2>{selectedConversation.subject}</h2>
-
-                  {isLoadingConversation ? (
-                    <p>Loading conversation...</p>
-                  ) : (
-                    <>
-                      <div>
-                        {selectedConversation.messages.map((message) => (
-                          <article key={message.id}>
-                            <p>
-                              <strong>{message.sender}</strong>
-                            </p>
-
-                            <p>{message.content}</p>
-
-                            <time dateTime={message.createdAt}>
-                              {new Date(message.createdAt).toLocaleString()}
-                            </time>
-                          </article>
-                        ))}
-                      </div>
-
-                      <form onSubmit={handleReplySubmit}>
-                        <div className={styles.field}>
-                          <label htmlFor="reply">Reply</label>
-
-                          <textarea
-                            id="reply"
-                            value={reply}
-                            onChange={(event) => setReply(event.target.value)}
-                            rows={4}
-                          />
-                        </div>
-
-                        {replyError ? (
-                          <p className={styles.error} role="alert">
-                            {replyError}
-                          </p>
-                        ) : null}
-
-                        <button
-                          type="submit"
-                          className={styles.submit}
-                          disabled={isSendingReply || !reply.trim()}
-                        >
-                          {isSendingReply ? "Sending..." : "Send Reply"}
-                        </button>
-                      </form>
-                    </>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setIsCreatingConversation(true)}
-                  >
-                    + Start New Conversation
-                  </button>
-                </section>
+                <ConversationDetail
+                  conversation={selectedConversation}
+                  customerId={customerId}
+                  isLoading={isLoadingConversation}
+                  onMessageCreated={(message) => {
+                    setSelectedConversation((current) =>
+                      current
+                        ? {
+                            ...current,
+                            messages: [...current.messages, message],
+                          }
+                        : current,
+                    );
+                  }}
+                />
               ) : null}
 
               {!isCreatingConversation && !selectedConversation ? (
