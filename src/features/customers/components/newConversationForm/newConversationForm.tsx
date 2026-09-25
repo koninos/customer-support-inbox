@@ -97,7 +97,7 @@ export function NewConversationForm({
         ) : null}
 
         <div className={styles.actions}>
-          <button type="button" onClick={onCancel}>
+          <button type="button" className={styles.cancel} onClick={onCancel}>
             Cancel
           </button>
 
