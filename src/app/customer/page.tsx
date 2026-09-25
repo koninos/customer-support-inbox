@@ -71,11 +71,13 @@ export default function CustomerPage() {
 
           {customersError ? <p role="alert">{customersError}</p> : null}
 
-          <CustomerSelector
-            customers={customers}
-            customerId={customerId}
-            onCustomerChange={handleCustomerChange}
-          />
+          {!isLoadingCustomers && (
+            <CustomerSelector
+              customers={customers}
+              customerId={customerId}
+              onCustomerChange={handleCustomerChange}
+            />
+          )}
 
           {customerId ? (
             <>

@@ -35,7 +35,15 @@ export function ConversationList({
               >
                 <span className={styles.subject}>{conversation.subject}</span>
 
-                <span className={styles.status}>{conversation.status}</span>
+                <span
+                  className={`${styles.status} ${
+                    conversation.status === "open"
+                      ? styles.statusOpen
+                      : styles.statusClosed
+                  }`}
+                >
+                  {conversation.status}
+                </span>
               </button>
             </li>
           ))}
