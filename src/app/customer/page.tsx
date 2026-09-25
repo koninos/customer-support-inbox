@@ -10,6 +10,7 @@ import {
 } from "@/features/conversations/types/api";
 
 import styles from "./page.module.scss";
+import { CustomerSelector } from "./components/customerSelector/customerSelector";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
@@ -217,23 +218,11 @@ export default function CustomerPage() {
         </header>
 
         <div className={styles.form}>
-          <div className={styles.field}>
-            <label htmlFor="customer">Customer</label>
-
-            <select
-              id="customer"
-              value={customerId}
-              onChange={(event) => setCustomerId(event.target.value)}
-            >
-              <option value="">Select a customer</option>
-
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <CustomerSelector
+            customers={customers}
+            customerId={customerId}
+            onCustomerChange={setCustomerId}
+          />
 
           {customerId ? (
             <>
