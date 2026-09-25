@@ -30,81 +30,8 @@
   }
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
+.content {
   padding: var(--spacing-lg);
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-
-  label {
-    font-weight: 600;
-  }
-
-  input,
-  select,
-  textarea {
-    width: 100%;
-    padding: var(--spacing-sm);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font: inherit;
-
-    &:focus {
-      outline: 2px solid var(--color-text);
-      outline-offset: 1px;
-    }
-  }
-
-  textarea {
-    resize: vertical;
-  }
-}
-
-.submit {
-  align-self: flex-end;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: var(--color-text);
-  color: var(--color-surface);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.success {
-  margin: var(--spacing-md) var(--spacing-lg);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-success-border);
-  background: var(--color-success-background);
-  color: var(--color-success-text);
-}
-
-.error {
-  margin: var(--spacing-md) var(--spacing-lg);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-error-border);
-  background: var(--color-error-background);
-  color: var(--color-error-text);
 }
 
 .newConversationButton {

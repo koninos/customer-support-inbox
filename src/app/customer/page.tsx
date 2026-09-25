@@ -66,7 +66,7 @@ export default function CustomerPage() {
           <p>View your conversations and contact support.</p>
         </header>
 
-        <div className={styles.form}>
+        <div className={styles.content}>
           {isLoadingCustomers ? <p>Loading customers...</p> : null}
 
           {customersError ? <p role="alert">{customersError}</p> : null}
