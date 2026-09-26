@@ -35,6 +35,11 @@
   }
 }
 
+.active {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
 .subject {
   font-weight: 600;
 }

@@ -17,20 +17,23 @@ export function ConversationList({
       <h2 className={styles.title}>Conversations</h2>
 
       <ul className={styles.list}>
-        {conversations.map((conversation) => (
-          <li key={conversation.id} className={styles.item}>
-            <button
-              type="button"
-              className={styles.button}
-              onClick={() => onSelectConversation(conversation.id)}
-              aria-pressed={conversation.id === selectedConversationId}
-            >
-              <span className={styles.subject}>{conversation.subject}</span>
+        {conversations.map((conversation) => {
+          const isActive = conversation.id === selectedConversationId;
+          return (
+            <li key={conversation.id} className={styles.item}>
+              <button
+                type="button"
+                className={`${styles.button} ${isActive ? styles.active : ""}`}
+                onClick={() => onSelectConversation(conversation.id)}
+                aria-pressed={conversation.id === selectedConversationId}
+              >
+                <span className={styles.subject}>{conversation.subject}</span>
 
-              <span className={styles.customer}>{conversation.customer}</span>
-            </button>
-          </li>
-        ))}
+                <span className={styles.customer}>{conversation.customer}</span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </aside>
   );
