@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 
 import styles from "./conversationDetail.module.scss";
 import { Conversation, Message } from "@/features/customerSupport/types/ui";
+import { sendAgentMessage } from "@/features/customerSupport/api/customerSupport";
 
 type ConversationDetailProps = {
   conversation: Conversation;
@@ -27,24 +28,10 @@ export function ConversationDetail({
     setError(null);
 
     try {
-      const response = await fetch(
-        `/api/conversations/${conversation.id}/messages`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: replyMessage,
-          }),
-        },
+      const message: Message = await sendAgentMessage(
+        conversation.id,
+        replyMessage,
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to send message.");
-      }
-
-      const message: Message = await response.json();
 
       onMessageCreated(message);
       setReplyMessage("");

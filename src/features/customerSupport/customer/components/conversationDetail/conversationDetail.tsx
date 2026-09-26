@@ -6,6 +6,7 @@ import {
 } from "@/features/customerSupport/types/api";
 
 import styles from "./conversationDetail.module.scss";
+import { sendCustomerMessage } from "@/features/customerSupport/api/customerSupport";
 
 type ConversationDetailProps = {
   conversation: ConversationResponse;
@@ -34,25 +35,11 @@ export function ConversationDetail({
     setReplyError(null);
 
     try {
-      const response = await fetch(
-        `/api/customers/conversations/${conversation.id}/messages`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            customerId: Number(customerId),
-            content: reply,
-          }),
-        },
+      const message: MessageResponse = await sendCustomerMessage(
+        conversation.id,
+        Number(customerId),
+        reply,
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to send reply.");
-      }
-
-      const message: MessageResponse = await response.json();
 
       onMessageCreated(message);
       setReply("");

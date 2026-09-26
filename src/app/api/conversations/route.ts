@@ -15,7 +15,14 @@ export async function GET() {
     ORDER BY conversations.updated_at DESC
   `);
 
-  const conversations: ConversationListItemResponse[] = result.rows;
+  const conversations: ConversationListItemResponse[] = result.rows.map(
+    (row) => ({
+      id: Number(row.id),
+      subject: row.subject,
+      status: row.status,
+      customer: row.customer,
+    }),
+  );
 
   return Response.json(conversations);
 }

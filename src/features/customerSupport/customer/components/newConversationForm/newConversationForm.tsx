@@ -5,6 +5,7 @@ import { SyntheticEvent, useState } from "react";
 import { ConversationResponse } from "@/features/customerSupport/types/api";
 
 import styles from "./newConversationForm.module.scss";
+import { createCustomerConversation } from "@/features/customerSupport/api/customerSupport";
 
 type NewConversationFormProps = {
   customerId: string;
@@ -30,23 +31,8 @@ export function NewConversationForm({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/customers/conversations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customerId: Number(customerId),
-          subject,
-          content,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create conversation.");
-      }
-
-      const conversation: ConversationResponse = await response.json();
+      const conversation: ConversationResponse =
+        await createCustomerConversation(customerId, subject, content);
 
       onConversationCreated(conversation);
 

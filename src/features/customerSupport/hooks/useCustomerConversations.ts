@@ -4,6 +4,7 @@ import {
   ConversationListItemResponse,
   ConversationResponse,
 } from "@/features/customerSupport/types/api";
+import { fetchCustomerConversations } from "../api/customerSupport";
 
 export function useCustomerConversations(customerId: string) {
   const [conversations, setConversations] = useState<
@@ -23,15 +24,8 @@ export function useCustomerConversations(customerId: string) {
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/customers/${customerId}/conversations`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch conversations.");
-        }
-
-        const data: ConversationListItemResponse[] = await response.json();
+        const data: ConversationListItemResponse[] =
+          await fetchCustomerConversations(customerId);
 
         setConversations(data);
       } catch (error) {
