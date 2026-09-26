@@ -4,6 +4,7 @@ import {
   ConversationResponse,
   MessageResponse,
 } from "@/features/conversations/types/api";
+import { fetchConversation } from "../api/conversations";
 
 export function useConversation(conversationId: number | null) {
   const [conversation, setConversation] = useState<ConversationResponse | null>(
@@ -18,18 +19,16 @@ export function useConversation(conversationId: number | null) {
       return;
     }
 
-    async function fetchConversation() {
+    const selectedConversationId = conversationId;
+
+    async function getConversation() {
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(`/api/conversations/${conversationId}`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch conversation.");
-        }
-
-        const data: ConversationResponse = await response.json();
+        const data: ConversationResponse = await fetchConversation(
+          selectedConversationId,
+        );
 
         setConversation(data);
       } catch (error) {
@@ -43,7 +42,7 @@ export function useConversation(conversationId: number | null) {
       }
     }
 
-    fetchConversation();
+    getConversation();
   }, [conversationId]);
 
   function addMessage(message: MessageResponse) {

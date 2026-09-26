@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { CustomerResponse } from "@/features/conversations/types/api";
+import { fetchCustomers } from "../api/customers";
 
 export function useCustomers() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
@@ -8,15 +9,9 @@ export function useCustomers() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchCustomers() {
+    async function getCustomers() {
       try {
-        const response = await fetch("/api/customers");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch customers.");
-        }
-
-        const data: CustomerResponse[] = await response.json();
+        const data: CustomerResponse[] = await fetchCustomers();
 
         setCustomers(data);
       } catch (error) {
@@ -28,7 +23,7 @@ export function useCustomers() {
       }
     }
 
-    fetchCustomers();
+    getCustomers();
   }, []);
 
   return {
