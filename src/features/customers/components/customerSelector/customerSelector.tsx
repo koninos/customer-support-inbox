@@ -15,7 +15,7 @@ export function CustomerSelector({
 }: CustomerSelectorProps) {
   return (
     <div className={styles.field}>
-      <label htmlFor="customer">Customer</label>
+      <label htmlFor="customer">Simulate Customer</label>
 
       <select
         id="customer"
