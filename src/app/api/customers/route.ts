@@ -1,5 +1,5 @@
-import { CustomerResponse } from "@/features/conversations/types/api";
-import { CustomerRow } from "@/features/conversations/types/database";
+import { CustomerResponse } from "@/features/customerSupport/types/api";
+import { CustomerRow } from "@/features/customerSupport/types/database";
 import pool from "@/lib/db";
 
 export async function GET() {

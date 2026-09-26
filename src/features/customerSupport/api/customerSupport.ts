@@ -1,10 +1,11 @@
 import {
   ConversationListItemResponse,
   ConversationResponse,
-} from "@/features/conversations/types/api";
+} from "@/features/customerSupport/types/api";
+import { CustomerResponse } from "@/features/customerSupport/types/api";
 
+const customersApiBaseUrl = "/api/customers";
 const conversationsApiBaseUrl = "/api/conversations";
-const customerConversationsApiBaseUrl = "/api/customers";
 
 export async function fetchConversation(
   conversationId: number,
@@ -22,11 +23,21 @@ export async function fetchCustomerConversations(
   customerId: string,
 ): Promise<ConversationListItemResponse[]> {
   const response = await fetch(
-    `${customerConversationsApiBaseUrl}/${customerId}/conversations`,
+    `${customersApiBaseUrl}/${customerId}/conversations`,
   );
 
   if (!response.ok) {
     throw new Error("Failed to fetch conversations.");
+  }
+
+  return response.json();
+}
+
+export async function fetchCustomers(): Promise<CustomerResponse[]> {
+  const response = await fetch(`${customersApiBaseUrl}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch customers.");
   }
 
   return response.json();

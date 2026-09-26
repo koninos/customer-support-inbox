@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 
-import { CustomerSelector } from "@/features/customers/components/customerSelector/customerSelector";
-import { ConversationList } from "@/features/customers/components/conversationList/conversationList";
-import { ConversationDetail } from "@/features/customers/components/conversationDetail/conversationDetail";
-import { NewConversationForm } from "@/features/customers/components/newConversationForm/newConversationForm";
-import { useCustomers } from "@/features/customers/hooks/useCustomers";
-import { useCustomerConversations } from "@/features/conversations/hooks/useCustomerConversations";
-import { useConversation } from "@/features/conversations/hooks/useConversation";
+import { CustomerSelector } from "@/features/customerSupport/customer/components/customerSelector/customerSelector";
+import { ConversationList } from "@/features/customerSupport/customer/components/conversationList/conversationList";
+import { ConversationDetail } from "@/features/customerSupport/customer/components/conversationDetail/conversationDetail";
+import { NewConversationForm } from "@/features/customerSupport/customer/components/newConversationForm/newConversationForm";
+import { useCustomers } from "@/features/customerSupport/hooks/useCustomers";
+import { useCustomerConversations } from "@/features/customerSupport/hooks/useCustomerConversations";
+import { useConversation } from "@/features/customerSupport/hooks/useConversation";
 import styles from "./page.module.scss";
 
 export default function CustomerPage() {

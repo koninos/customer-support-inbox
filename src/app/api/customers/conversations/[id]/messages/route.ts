@@ -1,6 +1,6 @@
-import { createCustomerMessageRequestSchema } from "@/features/conversations/schemas/api";
-import { MessageResponse } from "@/features/conversations/types/api";
-import { MessageRow } from "@/features/conversations/types/database";
+import { createCustomerMessageRequestSchema } from "@/features/customerSupport/schemas/api";
+import { MessageResponse } from "@/features/customerSupport/types/api";
+import { MessageRow } from "@/features/customerSupport/types/database";
 import pool from "@/lib/db";
 
 type RouteContext = {

@@ -2,7 +2,7 @@
 
 import { SyntheticEvent, useState } from "react";
 
-import { ConversationResponse } from "@/features/conversations/types/api";
+import { ConversationResponse } from "@/features/customerSupport/types/api";
 
 import styles from "./newConversationForm.module.scss";
 

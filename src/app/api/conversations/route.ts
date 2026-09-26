@@ -1,6 +1,6 @@
 import pool from "@/lib/db";
-import { ConversationListItemResponse } from "@/features/conversations/types/api";
-import { ConversationListItemRow } from "@/features/conversations/types/database";
+import { ConversationListItemResponse } from "@/features/customerSupport/types/api";
+import { ConversationListItemRow } from "@/features/customerSupport/types/database";
 
 export async function GET() {
   const result = await pool.query<ConversationListItemRow>(`

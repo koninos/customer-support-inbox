@@ -1,4 +1,4 @@
-import { CustomerResponse } from "@/features/conversations/types/api";
+import { CustomerResponse } from "@/features/customerSupport/types/api";
 
 import styles from "./customerSelector.module.scss";
 

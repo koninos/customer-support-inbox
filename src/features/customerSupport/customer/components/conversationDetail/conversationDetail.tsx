@@ -3,7 +3,7 @@ import { SyntheticEvent, useState } from "react";
 import {
   ConversationResponse,
   MessageResponse,
-} from "@/features/conversations/types/api";
+} from "@/features/customerSupport/types/api";
 
 import styles from "./conversationDetail.module.scss";
 

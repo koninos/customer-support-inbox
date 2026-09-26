@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   ConversationListItemResponse,
   ConversationResponse,
-} from "@/features/conversations/types/api";
+} from "@/features/customerSupport/types/api";
 
 export function useCustomerConversations(customerId: string) {
   const [conversations, setConversations] = useState<

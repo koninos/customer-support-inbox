@@ -1,4 +1,4 @@
-import { ConversationListItemResponse } from "@/features/conversations/types/api";
+import { ConversationListItemResponse } from "@/features/customerSupport/types/api";
 
 import styles from "./conversationList.module.scss";
 

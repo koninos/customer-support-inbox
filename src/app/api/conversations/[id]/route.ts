@@ -2,11 +2,11 @@ import pool from "@/lib/db";
 import {
   ConversationResponse,
   MessageResponse,
-} from "@/features/conversations/types/api";
+} from "@/features/customerSupport/types/api";
 import {
   ConversationListItemRow,
   MessageRow,
-} from "@/features/conversations/types/database";
+} from "@/features/customerSupport/types/database";
 
 type RouteContext = {
   params: Promise<{ id: string }>;

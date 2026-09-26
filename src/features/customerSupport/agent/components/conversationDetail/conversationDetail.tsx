@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
-import { Conversation, Message } from "../../types/ui";
+
 import styles from "./conversationDetail.module.scss";
+import { Conversation, Message } from "@/features/customerSupport/types/ui";
 
 type ConversationDetailProps = {
   conversation: Conversation;

@@ -1,8 +1,8 @@
 import pool from "@/lib/db";
 
-import { MessageResponse } from "@/features/conversations/types/api";
-import { MessageRow } from "@/features/conversations/types/database";
-import { createMessageRequestSchema } from "@/features/conversations/schemas/api";
+import { MessageResponse } from "@/features/customerSupport/types/api";
+import { MessageRow } from "@/features/customerSupport/types/database";
+import { createMessageRequestSchema } from "@/features/customerSupport/schemas/api";
 
 type RouteContext = {
   params: Promise<{ id: string }>;

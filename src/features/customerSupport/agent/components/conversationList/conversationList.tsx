@@ -1,4 +1,4 @@
-import { ConversationListItem } from "../../types/ui";
+import { ConversationListItem } from "@/features/customerSupport/types/ui";
 import styles from "./conversationList.module.scss";
 
 type ConversationListProps = {

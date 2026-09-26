@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { CustomerResponse } from "@/features/conversations/types/api";
-import { fetchCustomers } from "../api/customers";
+import { CustomerResponse } from "@/features/customerSupport/types/api";
+import { fetchCustomers } from "../api/customerSupport";
 
 export function useCustomers() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);

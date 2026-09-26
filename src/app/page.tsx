@@ -1,4 +1,4 @@
-import { ConversationInbox } from "@/features/conversations/components/conversationInbox/conversationInbox";
+import { ConversationInbox } from "@/features/customerSupport/agent/components/conversationInbox/conversationInbox";
 
 export default function Home() {
   return <ConversationInbox />;

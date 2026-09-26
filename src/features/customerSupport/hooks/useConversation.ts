@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import {
   ConversationResponse,
   MessageResponse,
-} from "@/features/conversations/types/api";
-import { fetchConversation } from "../api/conversations";
+} from "@/features/customerSupport/types/api";
+import { fetchConversation } from "../api/customerSupport";
 
 export function useConversation(conversationId: number | null) {
   const [conversation, setConversation] = useState<ConversationResponse | null>(

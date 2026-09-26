@@ -1,7 +1,7 @@
 import pool from "@/lib/db";
-import { createCustomerConversationRequestSchema } from "@/features/conversations/schemas/api";
-import { ConversationResponse } from "@/features/conversations/types/api";
-import { MessageRow } from "@/features/conversations/types/database";
+import { createCustomerConversationRequestSchema } from "@/features/customerSupport/schemas/api";
+import { ConversationResponse } from "@/features/customerSupport/types/api";
+import { MessageRow } from "@/features/customerSupport/types/database";
 
 export async function POST(request: Request) {
   const body = await request.json();
