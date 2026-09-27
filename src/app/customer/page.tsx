@@ -30,15 +30,12 @@ export default function CustomerPage() {
     conversations,
     isLoading: isLoadingConversations,
     error: conversationsError,
-    addConversation,
-    clearConversations,
   } = useCustomerConversations(customerId);
 
   const {
     conversation: selectedConversation,
     isLoading: isLoadingConversation,
     error: conversationError,
-    addMessage,
   } = useConversation(selectedConversationId);
 
   const startNewConversationButton = (
@@ -52,7 +49,6 @@ export default function CustomerPage() {
   );
 
   function handleCustomerChange(nextCustomerId: string) {
-    clearConversations();
     setCustomerId(nextCustomerId);
     setSelectedConversationId(null);
     setIsCreatingConversation(false);
@@ -101,19 +97,20 @@ export default function CustomerPage() {
 
               {!isCreatingConversation &&
               selectedConversation &&
-              !conversationError ? (
+              !conversationError &&
+              !isLoadingConversation ? (
                 <>
                   <ConversationDetail
                     conversation={selectedConversation}
-                    customerId={customerId}
-                    isLoading={isLoadingConversation}
-                    onMessageCreated={addMessage}
+                    customerId={Number(customerId)}
                   />
                   {startNewConversationButton}
                 </>
               ) : null}
 
-              {!isCreatingConversation && !selectedConversation
+              {!isCreatingConversation &&
+              !selectedConversation &&
+              !isLoadingConversation
                 ? startNewConversationButton
                 : null}
 
@@ -121,7 +118,6 @@ export default function CustomerPage() {
                 <NewConversationForm
                   customerId={customerId}
                   onConversationCreated={(conversation) => {
-                    addConversation(conversation);
                     setSelectedConversationId(conversation.id);
                     setIsCreatingConversation(false);
                   }}

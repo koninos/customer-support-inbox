@@ -1,38 +1,16 @@
-import { useEffect, useState } from "react";
-
+import { useQuery } from "@tanstack/react-query";
 import { fetchConversations } from "@/features/customerSupport/api/customerSupport";
-import { ConversationListItemResponse } from "@/features/customerSupport/types/api";
+import { customerSupportQueryKeys as keys } from "../queryKeys";
 
 export function useConversations() {
-  const [conversations, setConversations] = useState<
-    ConversationListItemResponse[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadConversations() {
-      try {
-        const data = await fetchConversations();
-
-        setConversations(data);
-      } catch (error) {
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to load conversations.",
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadConversations();
-  }, []);
+  const query = useQuery({
+    queryKey: keys.conversations,
+    queryFn: fetchConversations,
+  });
 
   return {
-    conversations,
-    isLoading,
-    error,
+    conversations: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
   };
 }

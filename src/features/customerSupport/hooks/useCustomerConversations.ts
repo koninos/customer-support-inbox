@@ -1,70 +1,18 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import {
-  ConversationListItemResponse,
-  ConversationResponse,
-} from "@/features/customerSupport/types/api";
 import { fetchCustomerConversations } from "../api/customerSupport";
+import { customerSupportQueryKeys as keys } from "../queryKeys";
 
 export function useCustomerConversations(customerId: string) {
-  const [conversations, setConversations] = useState<
-    ConversationListItemResponse[]
-  >([]);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!customerId) {
-      return;
-    }
-
-    const controller = new AbortController();
-
-    async function fetchConversations() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const data: ConversationListItemResponse[] =
-          await fetchCustomerConversations(customerId, controller.signal);
-
-        setConversations(data);
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch conversations.",
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchConversations();
-
-    return () => {
-      controller.abort();
-    };
-  }, [customerId]);
-
-  function addConversation(conversation: ConversationResponse) {
-    setConversations((current) => [conversation, ...current]);
-  }
-
-  function clearConversations() {
-    setConversations([]);
-  }
+  const query = useQuery({
+    queryKey: keys.customerConversations(customerId),
+    queryFn: ({ signal }) => fetchCustomerConversations(customerId, signal),
+    enabled: Boolean(customerId),
+  });
 
   return {
-    conversations,
-    isLoading,
-    error,
-    addConversation,
-    clearConversations,
+    conversations: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
   };
 }

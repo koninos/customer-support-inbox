@@ -26,7 +26,6 @@ export function ConversationInbox() {
     conversation: selectedConversation,
     isLoading: isLoadingConversation,
     error: conversationError,
-    addMessage,
   } = useConversation(selectedId);
 
   if (isLoadingConversations) {
@@ -53,10 +52,7 @@ export function ConversationInbox() {
       {conversationError && <p>{conversationError}</p>}
 
       {shouldShowDetails && (
-        <ConversationDetail
-          conversation={selectedConversation}
-          onMessageCreated={addMessage}
-        />
+        <ConversationDetail conversation={selectedConversation} />
       )}
     </div>
   );

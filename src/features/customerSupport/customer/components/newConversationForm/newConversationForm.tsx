@@ -4,8 +4,8 @@ import { SyntheticEvent, useState } from "react";
 
 import { ConversationResponse } from "@/features/customerSupport/types/api";
 
+import { useCreateCustomerConversation } from "@/features/customerSupport/hooks/useCreateCustomerConversation";
 import styles from "./newConversationForm.module.scss";
-import { createCustomerConversation } from "@/features/customerSupport/api/customerSupport";
 
 type NewConversationFormProps = {
   customerId: string;
@@ -21,32 +21,28 @@ export function NewConversationForm({
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const createConversationMutation = useCreateCustomerConversation();
+  const isCreating = createConversationMutation.isPending;
+  const error =
+    createConversationMutation.error instanceof Error
+      ? createConversationMutation.error.message
+      : null;
 
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
-      const conversation: ConversationResponse =
-        await createCustomerConversation(customerId, subject, content);
-
-      onConversationCreated(conversation);
-
-      setSubject("");
-      setContent("");
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to create conversation.",
-      );
-    } finally {
-      setIsSubmitting(false);
+    if (!subject.trim() || !content.trim()) {
+      return;
     }
+    const conversation = await createConversationMutation.mutateAsync({
+      customerId,
+      subject,
+      content,
+    });
+
+    setSubject("");
+    setContent("");
+    onConversationCreated(conversation);
   }
 
   return (
@@ -62,6 +58,7 @@ export function NewConversationForm({
             type="text"
             value={subject}
             onChange={(event) => setSubject(event.target.value)}
+            disabled={isCreating}
           />
         </div>
 
@@ -73,26 +70,32 @@ export function NewConversationForm({
             value={content}
             onChange={(event) => setContent(event.target.value)}
             rows={6}
+            disabled={isCreating}
           />
         </div>
 
-        {error ? (
+        {error && (
           <p className={styles.error} role="alert">
             {error}
           </p>
-        ) : null}
+        )}
 
         <div className={styles.actions}>
-          <button type="button" className={styles.cancel} onClick={onCancel}>
+          <button
+            type="button"
+            className={styles.cancel}
+            disabled={isCreating}
+            onClick={onCancel}
+          >
             Cancel
           </button>
 
           <button
             type="submit"
             className={styles.submit}
-            disabled={isSubmitting || !subject.trim() || !content.trim()}
+            disabled={isCreating || !subject.trim() || !content.trim()}
           >
-            {isSubmitting ? "Creating..." : "Create Conversation"}
+            {isCreating ? "Creating..." : "Create Conversation"}
           </button>
         </div>
       </form>

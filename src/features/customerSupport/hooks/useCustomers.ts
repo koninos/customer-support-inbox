@@ -1,34 +1,17 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import { CustomerResponse } from "@/features/customerSupport/types/api";
 import { fetchCustomers } from "../api/customerSupport";
+import { customerSupportQueryKeys as keys } from "../queryKeys";
 
 export function useCustomers() {
-  const [customers, setCustomers] = useState<CustomerResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function getCustomers() {
-      try {
-        const data: CustomerResponse[] = await fetchCustomers();
-
-        setCustomers(data);
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : "Failed to fetch customers.",
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    getCustomers();
-  }, []);
+  const query = useQuery({
+    queryKey: keys.customers,
+    queryFn: fetchCustomers,
+  });
 
   return {
-    customers,
-    isLoading,
-    error,
+    customers: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
   };
 }

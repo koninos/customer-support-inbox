@@ -1,78 +1,24 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import {
-  ConversationResponse,
-  MessageResponse,
-} from "@/features/customerSupport/types/api";
-import { fetchConversation } from "../api/customerSupport";
+import { fetchConversation } from "@/features/customerSupport/api/customerSupport";
+import { customerSupportQueryKeys as keys } from "../queryKeys";
 
 export function useConversation(conversationId: number | null) {
-  const [conversation, setConversation] = useState<ConversationResponse | null>(
-    null,
-  );
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (conversationId === null) {
-      return;
-    }
-
-    const selectedConversationId = conversationId;
-    const controller = new AbortController();
-
-    async function getConversation() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const data: ConversationResponse = await fetchConversation(
-          selectedConversationId,
-          controller.signal,
-        );
-
-        setConversation(data);
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch conversation.",
-        );
-      } finally {
-        setIsLoading(false);
+  const query = useQuery({
+    queryKey: keys.conversation(conversationId),
+    queryFn: ({ signal }) => {
+      if (conversationId === null) {
+        throw new Error("Conversation ID is required.");
       }
-    }
 
-    getConversation();
-
-    return () => {
-      controller.abort();
-    };
-  }, [conversationId]);
-
-  function addMessage(message: MessageResponse) {
-    setConversation((current) =>
-      current
-        ? {
-            ...current,
-            messages: [...current.messages, message],
-          }
-        : current,
-    );
-  }
-
-  const selectedConversation =
-    conversation?.id === conversationId ? conversation : null;
+      return fetchConversation(conversationId, signal);
+    },
+    enabled: conversationId !== null,
+  });
 
   return {
-    conversation: selectedConversation,
-    isLoading,
-    error,
-    addMessage,
+    conversation: query.data ?? null,
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
   };
 }

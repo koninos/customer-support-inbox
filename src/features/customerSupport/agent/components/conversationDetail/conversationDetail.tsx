@@ -1,21 +1,23 @@
 import { SyntheticEvent, useState } from "react";
 
-import { Conversation, Message } from "@/features/customerSupport/types/ui";
-import { sendAgentMessage } from "@/features/customerSupport/api/customerSupport";
+import { Conversation } from "@/features/customerSupport/types/ui";
+import { useSendAgentMessage } from "@/features/customerSupport/hooks/useSendAgentMessage";
 import styles from "./conversationDetail.module.scss";
 
 type ConversationDetailProps = {
   conversation: Conversation;
-  onMessageCreated: (message: Message) => void;
 };
 
-export function ConversationDetail({
-  conversation,
-  onMessageCreated,
-}: ConversationDetailProps) {
+export function ConversationDetail({ conversation }: ConversationDetailProps) {
   const [replyMessage, setReplyMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const sendMessageMutation = useSendAgentMessage();
+
+  const isSending = sendMessageMutation.isPending;
+
+  const error =
+    sendMessageMutation.error instanceof Error
+      ? sendMessageMutation.error.message
+      : null;
 
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,24 +26,12 @@ export function ConversationDetail({
       return;
     }
 
-    setIsSending(true);
-    setError(null);
+    await sendMessageMutation.mutateAsync({
+      conversationId: conversation.id,
+      content: replyMessage,
+    });
 
-    try {
-      const message: Message = await sendAgentMessage(
-        conversation.id,
-        replyMessage,
-      );
-
-      onMessageCreated(message);
-      setReplyMessage("");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to send message.",
-      );
-    } finally {
-      setIsSending(false);
-    }
+    setReplyMessage("");
   }
 
   const isDisabled = isSending || !replyMessage.trim();
