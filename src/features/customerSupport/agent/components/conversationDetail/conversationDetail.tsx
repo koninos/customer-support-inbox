@@ -1,8 +1,8 @@
-import { FormEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 
-import styles from "./conversationDetail.module.scss";
 import { Conversation, Message } from "@/features/customerSupport/types/ui";
 import { sendAgentMessage } from "@/features/customerSupport/api/customerSupport";
+import styles from "./conversationDetail.module.scss";
 
 type ConversationDetailProps = {
   conversation: Conversation;
@@ -17,7 +17,7 @@ export function ConversationDetail({
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!replyMessage.trim()) {
