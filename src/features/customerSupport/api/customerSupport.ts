@@ -8,16 +8,32 @@ import {
 const customersApiBaseUrl = "/api/customers";
 const conversationsApiBaseUrl = "/api/conversations";
 
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (response.ok) {
+    return response.json();
+  }
+
+  let message = "Something went wrong.";
+
+  try {
+    const data: { message?: string } = await response.json();
+
+    if (data.message) {
+      message = data.message;
+    }
+  } catch {
+    // Response doesn't contain valid JSON.
+  }
+
+  throw new Error(message);
+}
+
 export async function fetchConversations(): Promise<
   ConversationListItemResponse[]
 > {
   const response = await fetch(conversationsApiBaseUrl);
 
-  if (!response.ok) {
-    throw new Error("Failed to load conversations.");
-  }
-
-  return response.json();
+  return handleResponse<ConversationListItemResponse[]>(response);
 }
 
 export async function fetchConversation(
@@ -25,11 +41,7 @@ export async function fetchConversation(
 ): Promise<ConversationResponse> {
   const response = await fetch(`${conversationsApiBaseUrl}/${conversationId}`);
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch conversation.");
-  }
-
-  return response.json();
+  return handleResponse<ConversationResponse>(response);
 }
 
 export async function fetchCustomerConversations(
@@ -39,21 +51,13 @@ export async function fetchCustomerConversations(
     `${customersApiBaseUrl}/${customerId}/conversations`,
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch conversations.");
-  }
-
-  return response.json();
+  return handleResponse<ConversationListItemResponse[]>(response);
 }
 
 export async function fetchCustomers(): Promise<CustomerResponse[]> {
   const response = await fetch(customersApiBaseUrl);
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch customers.");
-  }
-
-  return response.json();
+  return handleResponse<CustomerResponse[]>(response);
 }
 
 export async function createCustomerConversation(
@@ -73,11 +77,7 @@ export async function createCustomerConversation(
     }),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to create conversation.");
-  }
-
-  return response.json();
+  return handleResponse<ConversationResponse>(response);
 }
 
 export async function sendCustomerMessage(
@@ -99,11 +99,7 @@ export async function sendCustomerMessage(
     },
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to send reply.");
-  }
-
-  return response.json();
+  return handleResponse<MessageResponse>(response);
 }
 
 export async function sendAgentMessage(
@@ -123,9 +119,5 @@ export async function sendAgentMessage(
     },
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to send reply.");
-  }
-
-  return response.json();
+  return handleResponse<MessageResponse>(response);
 }
