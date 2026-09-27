@@ -38,17 +38,22 @@ export async function fetchConversations(): Promise<
 
 export async function fetchConversation(
   conversationId: number,
+  signal?: AbortSignal,
 ): Promise<ConversationResponse> {
-  const response = await fetch(`${conversationsApiBaseUrl}/${conversationId}`);
+  const response = await fetch(`${conversationsApiBaseUrl}/${conversationId}`, {
+    signal,
+  });
 
   return handleResponse<ConversationResponse>(response);
 }
 
 export async function fetchCustomerConversations(
   customerId: string,
+  signal?: AbortSignal,
 ): Promise<ConversationListItemResponse[]> {
   const response = await fetch(
     `${customersApiBaseUrl}/${customerId}/conversations`,
+    { signal },
   );
 
   return handleResponse<ConversationListItemResponse[]>(response);

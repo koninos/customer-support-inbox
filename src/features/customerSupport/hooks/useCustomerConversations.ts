@@ -19,16 +19,22 @@ export function useCustomerConversations(customerId: string) {
       return;
     }
 
+    const controller = new AbortController();
+
     async function fetchConversations() {
       setIsLoading(true);
       setError(null);
 
       try {
         const data: ConversationListItemResponse[] =
-          await fetchCustomerConversations(customerId);
+          await fetchCustomerConversations(customerId, controller.signal);
 
         setConversations(data);
       } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
         setError(
           error instanceof Error
             ? error.message
@@ -40,6 +46,10 @@ export function useCustomerConversations(customerId: string) {
     }
 
     fetchConversations();
+
+    return () => {
+      controller.abort();
+    };
   }, [customerId]);
 
   function addConversation(conversation: ConversationResponse) {

@@ -20,6 +20,7 @@ export function useConversation(conversationId: number | null) {
     }
 
     const selectedConversationId = conversationId;
+    const controller = new AbortController();
 
     async function getConversation() {
       setIsLoading(true);
@@ -28,10 +29,15 @@ export function useConversation(conversationId: number | null) {
       try {
         const data: ConversationResponse = await fetchConversation(
           selectedConversationId,
+          controller.signal,
         );
 
         setConversation(data);
       } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
         setError(
           error instanceof Error
             ? error.message
@@ -43,6 +49,10 @@ export function useConversation(conversationId: number | null) {
     }
 
     getConversation();
+
+    return () => {
+      controller.abort();
+    };
   }, [conversationId]);
 
   function addMessage(message: MessageResponse) {
