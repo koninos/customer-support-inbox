@@ -130,11 +130,13 @@ Create a `.env.local` file in the project root:
 
 The project includes SQL migrations for creating the database schema and inserting development data:
 
+```text
 migrations/
 ├── 001_create_customers.sql
 ├── 002_create_conversations.sql
 ├── 003_create_messages.sql
 └── 004_seed_data.sql
+```
 
 Run:
 
